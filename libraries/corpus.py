@@ -39,7 +39,7 @@ def makeCleanCorpus(dataset,
                     lemmatize=False,
                     removeURL=True,
                     makeSentences=False,
-                    removeChar = False):
+                    removeChar = True):
     '''
     The makeCleanCorpus function will look for text files in the directory 
     specified by the dataset. Change this to suit you.
