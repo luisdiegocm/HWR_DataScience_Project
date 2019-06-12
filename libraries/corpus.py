@@ -90,7 +90,7 @@ def makeCleanCorpus(dataset,
         if removeURL:
             #text = text.replace("\n"," ")
             # Remove all the URLs with REGEX
-            text = re.sub(r"[h|H]ttps?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-zA-Z]{2,6}\b([-a-zA-Z0-9@:%_\+.\\~#?&\/\/=]*)", "", text)
+            text = re.sub(r"([h|H]ttps?:\/\/(www\.)?|www\.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-zA-Z]{2,6}\b([-a-zA-Z0-9@:%_\+.\\~#?&\/\/=]*)", "", text)
         
         # If remove punctuation and no making sentences
         if (removePunct and not makeSentences):
