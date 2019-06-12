@@ -1,15 +1,21 @@
 import os
+import sys
 import nltk
 from nltk.corpus import stopwords
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer 
+import spacy
 import string # for punctuation
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import re
 
+# Root directory of the project
+ROOT_DIR = os.path.abspath("../")
+sys.path.append(ROOT_DIR)
 
+DATASET_DIR = os.path.join(ROOT_DIR, "dataset")
 
 def get_wordnet_pos(word):
     '''Map POS tag to first character lemmatize() accepts'''
@@ -23,7 +29,7 @@ def get_wordnet_pos(word):
 
 
 # mystops is a user defined list of stopwords
-mystops = ['•' , '–','\uf0a7', '◦', 'i.','\u200b','∗','！']
+mystops = ['•' , '–','\uf0a7', '◦', 'i.','\u200b','∗','！','pdf','white paper','whitepaper', 'appendix']
             
 special_stops = ['\u200b']
 
@@ -39,7 +45,8 @@ def makeCleanCorpus(dataset,
                     lemmatize=False,
                     removeURL=True,
                     makeSentences=False,
-                    removeChar = True):
+                    removeChar = True,
+                    removeEnt = True):
     '''
     The makeCleanCorpus function will look for text files in the directory 
     specified by the dataset. Change this to suit you.
@@ -57,6 +64,7 @@ def makeCleanCorpus(dataset,
         removeURL    Should URLs be removed?
         makeSentence Instead of returning a whole corpus, it returns a list of processed sentences
         removeChar   Remove characters from A to Z that are alone
+        removeEnt    Remove all words that belong to an entity (Name, Organization, Time, Date, Product)
     Output:
         Dictionary with {name of document : whole corpus or list of sentences -> processed}
     '''
@@ -68,14 +76,18 @@ def makeCleanCorpus(dataset,
     nltk.download("stopwords")
     nltk.download('averaged_perceptron_tagger')
     nltk.download('wordnet')
+    nltk.download("en_core_web_md")
     ######
+    
+    if (removeEnt):
+        nlp = spacy.load("en_core_web_md")
     
     # Initialize final dictionary
     clean_files = {}
     
     # Iterates through all the dataset
     for filename, text in dataset.items():
-        
+        filename = filename.lower()
         print('Cleaning:', filename)
         
         # Define all the stopwords
@@ -92,6 +104,12 @@ def makeCleanCorpus(dataset,
             # Remove all the URLs with REGEX
             text = re.sub(r"([h|H]ttps?:\/\/(www\.)?|www\.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-zA-Z]{2,6}\b([-a-zA-Z0-9@:%_\+.\\~#?&\/\/=]*)", "", text)
         
+        if removeEnt:
+            doc = nlp(text)
+            for ent in doc.ents:
+                if(ent.label_ in ('LAW','ORG','GPE','PERSON','DATE','TIME','WORK_OF_ART','CARDINAL','QUANTITY','MONEY','NORP','PRODUCT')):
+                    text = text.replace(ent.text, "")
+            
         # If remove punctuation and no making sentences
         if (removePunct and not makeSentences):
             # Remove all the punctuations defined in the string library
@@ -111,12 +129,6 @@ def makeCleanCorpus(dataset,
         if lower:
             # Convert all the text to lower case
             text = text.lower()
-        
-        if removeChar:
-            # Tokenize the whole text
-            word_list = nltk.word_tokenize(text)
-            # Remove tokens that are a single character
-            text = ' '.join([w for w in word_list if (len(w) > 1 or w == '.')])
         
         # If lemmatize words
         if lemmatize:
@@ -138,6 +150,13 @@ def makeCleanCorpus(dataset,
             # Decoding the text to remove non-ascii characters
             text = text.encode("ascii", "ignore").decode('utf-8')
 
+        
+        if removeChar:
+            # Tokenize the whole text
+            word_list = nltk.word_tokenize(text)
+            # Remove tokens that are a single character
+            text = ' '.join([w for w in word_list if (len(w) > 2 or w == '.')])
+        
         # If make sentences
         if makeSentences:
             # Create tokens on a sentence level
@@ -194,4 +213,28 @@ def dictionaryToPandas(dictionary):
     for key in dictionary.keys():
         df.loc[key] = [dictionary[key]]
     
-    return df   
+    return df
+
+
+def get_coin(text):
+    return re.search(r'([0-9]{0,30})([a-zA-Z0-9]{3,7})$',text)
+
+def get_datastats():
+    df = pd.read_csv(os.path.join(DATASET_DIR, "stats.csv"),sep=";")
+    
+    df.columns = ['rank','name',"marketcapUSD","priceUSD","volumeUSD","circulatingsupply","changePER"]
+    
+    df.name = df.name.apply(lambda x : x.lower())
+    df.name = df.name.apply(lambda x : x.replace(" ",""))
+    
+    df.marketcapUSD = df.marketcapUSD.str.replace("$","").str.replace(",","").astype("float")
+    df.priceUSD = df.priceUSD.str.replace("$","").str.replace(",","").astype("float")
+    df.volumeUSD = df.volumeUSD.str.replace("$","").str.replace(",","").astype("float")
+    
+    df.circulatingsupply = df.circulatingsupply.str.replace("*","").str.replace("\xa0","").str.replace(",","")
+    
+    df["coin"] = df.circulatingsupply.apply(lambda x : get_coin(x).group(2))
+    
+    df.circulatingsupply = df.circulatingsupply.apply(lambda x : get_coin(x).group(1)).astype("float")
+    
+    return df

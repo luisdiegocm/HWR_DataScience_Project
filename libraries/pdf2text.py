@@ -34,6 +34,7 @@ def get_dataset():
     dataset = {} #define the dataset dictionary
     for file in os.listdir(WHITE_PAPER_DIR): #iterating over all the files in the directory
         filename = os.fsdecode(file)
+        filename = filename.lower()
         parsed = parser.from_file(os.path.join(WHITE_PAPER_DIR, str(filename))) #parsing the texts within the file
         if ('content' in list(parsed.keys())):
             text = parsed['content'] #putting the parsed text into a variable
