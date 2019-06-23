@@ -34,11 +34,12 @@ def get_dataset():
     dataset = {} #define the dataset dictionary
     for file in os.listdir(WHITE_PAPER_DIR): #iterating over all the files in the directory
         filename = os.fsdecode(file)
-        filename = filename.lower()
-        parsed = parser.from_file(os.path.join(WHITE_PAPER_DIR, str(filename))) #parsing the texts within the file
-        if ('content' in list(parsed.keys())):
-            text = parsed['content'] #putting the parsed text into a variable
-            filename = filename.split(".")[0] #splitting the name to remove the .pdf
-            dataset[filename] = text #add file to the dictionary
+        if(filename!="unranked"):
+            filename = filename.lower().replace(" ","")
+            parsed = parser.from_file(os.path.join(WHITE_PAPER_DIR, str(filename))) #parsing the texts within the file
+            if ('content' in list(parsed.keys())):
+                text = parsed['content'] #putting the parsed text into a variable
+                filename = filename.split(".")[0] #splitting the name to remove the .pdf
+                dataset[filename] = text #add file to the dictionary
             
     return dataset

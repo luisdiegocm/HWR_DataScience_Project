@@ -29,7 +29,8 @@ def get_wordnet_pos(word):
 
 
 # mystops is a user defined list of stopwords
-mystops = ['•' , '–','\uf0a7', '◦', 'i.','\u200b','∗','！','pdf','white paper','whitepaper', 'appendix','microsoft','word','powerpoint','introduction']
+mystops = ['•' , '–','\uf0a7', '◦', 'i.','\u200b','∗','！','pdf','white paper','whitepaper', 'appendix','microsoft','word','powerpoint','introduction'
+          'satoshi','nakamoto','rippleconsensuswhitepaperupdated','abstract','josephlightningnerk']
             
 special_stops = ['\u200b']
 
