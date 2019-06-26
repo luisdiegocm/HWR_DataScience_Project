@@ -29,7 +29,8 @@ def get_wordnet_pos(word):
 
 
 # mystops is a user defined list of stopwords
-mystops = ['•' , '–','\uf0a7', '◦', 'i.','\u200b','∗','！','pdf','white paper','whitepaper', 'appendix']
+mystops = ['•' , '–','\uf0a7', '◦', 'i.','\u200b','∗','！','pdf','white paper','whitepaper', 'appendix','microsoft','word','powerpoint','introduction'
+          'satoshi','nakamoto','rippleconsensuswhitepaperupdated','abstract','josephlightningnerk']
             
 special_stops = ['\u200b']
 
@@ -220,7 +221,7 @@ def get_coin(text):
     return re.search(r'([0-9]{0,30})([a-zA-Z0-9]{3,7})$',text)
 
 def get_datastats():
-    df = pd.read_csv(os.path.join(DATASET_DIR, "stats.csv"),sep=";")
+    df = pd.read_csv(os.path.join(DATASET_DIR, "stats.csv"),sep=";", encoding="latin-1")
     
     df.columns = ['rank','name',"marketcapUSD","priceUSD","volumeUSD","circulatingsupply","changePER"]
     
@@ -228,8 +229,8 @@ def get_datastats():
     df.name = df.name.apply(lambda x : x.replace(" ",""))
     
     df.marketcapUSD = df.marketcapUSD.str.replace("$","").str.replace(",","").astype("float")
-    df.priceUSD = df.priceUSD.str.replace("$","").str.replace(",","").astype("float")
-    df.volumeUSD = df.volumeUSD.str.replace("$","").str.replace(",","").astype("float")
+    df.priceUSD = df.priceUSD.str.replace("$","").str.replace(",","").str.replace("%","").astype("float")
+    df.volumeUSD = df.volumeUSD.str.replace("$","").str.replace(",","").str.replace("M","").astype("float")
     
     df.circulatingsupply = df.circulatingsupply.str.replace("*","").str.replace("\xa0","").str.replace(",","")
     
