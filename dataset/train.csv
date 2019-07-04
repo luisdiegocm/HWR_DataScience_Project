@@ -1,4 +1,4 @@
-﻿Text;Label
+Text;Label
 vision;Product
 product;Product
 mvp;Product
@@ -100,3 +100,6 @@ serpent;team
 solc compiler;team
 lll;Team
 Mutan;Team
+CEO;Team
+CTO;Team
+risk;Legal
