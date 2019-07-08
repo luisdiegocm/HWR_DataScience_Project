@@ -10,6 +10,8 @@ The purpose is to explore some ways to extract insights from diverse White Paper
 The structure is as stated:
 
 ------------------------------------
+- Dashboard
+    - integrated Notebook with all the Methods Application (based on the Exploration Notebooks)
 - Dataset 
     - numeric data as well as the train data for one of the models
 - Libraries
@@ -40,7 +42,7 @@ To install the packages needed specific to this project, you would need to run t
 
 ## Possible Errors
 
-1.
+1. Error with Spacy
 
     OSError: [E050] Can't find model 'en_core_web_md'. It doesn't seem to be a shortcut link, a Python package or a valid path to a data directory.
 
