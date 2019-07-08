@@ -33,7 +33,24 @@ To install the packages needed specific to this project, you would need to run t
     pip install tensorflow
     pip install keras
     pip install theano * in case tensorflow doesn't work
+    pip install gensim
+    pip install spacy
+    pip install wordcloud
     
+
+## Possible Errors
+
+1.
+
+    OSError: [E050] Can't find model 'en_core_web_md'. It doesn't seem to be a shortcut link, a Python package or a valid path to a data directory.
+
+Solution: upgrade your pip library to the version 19:
+
+    pip install -U pip
+
+Then, install manually the library, from Terminal:
+
+    python3 -m spacy download en_core_web_md
     
 ## Sources
 
