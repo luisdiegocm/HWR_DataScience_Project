@@ -32,7 +32,7 @@ def get_dataset(path = WHITE_PAPER_DIR):
 
     """
     dataset = {} #define the dataset dictionary
-    for file in os.listdir(path): #iterating over all the files in the directory
+    for file in sorted(os.listdir(path)): #iterating over all the files in the directory
         filename = os.fsdecode(file)
         if(filename!="unranked"):
             parsed = parser.from_file(os.path.join(path, str(filename))) #parsing the texts within the file
